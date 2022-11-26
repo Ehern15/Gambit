@@ -93,7 +93,7 @@ export default function RegisterUser() {
                             onChange={(e) => onInputChange(e)}/>
                     </div>
                     <button type="submit" className="btn btn-outline-success">Submit</button>
-                    <Link className="btn btn-outline-danger mx-2" to="/login">Cancel</Link>
+                    <Link className="btn btn-outline-danger mx-2" to="/">Cancel</Link>
                 </form>
             </div>
         </div>

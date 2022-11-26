@@ -42,10 +42,10 @@ export default function Dashboard() {
                 <div className="py-4">
                 <div className="card">
                         <div className="card-header" >
-                            {}
+                            
                             Details of user id: <p>{id}</p>
                             
-                            <p key={user.id} >{user.pop().id}</p>
+                            
                             <ul className="list-group list-group-flush">
 
                                 <li className="list-group-item">

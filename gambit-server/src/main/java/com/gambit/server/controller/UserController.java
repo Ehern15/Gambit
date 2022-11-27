@@ -27,10 +27,23 @@ import com.gambit.server.util.FileUploadUtil;
 @RestController
 @CrossOrigin("http://localhost:3000")
 public class UserController {
-
+	/**
+	 * Class of where the data is being stored.
+	 * 
+	 */
 	@Autowired
 	private UserRepository userRepository;
 	
+	/**
+	 * This gets an uploaded image.
+	 * 
+	 * The method gets an uploaded image from the user to be used as a profile picture.
+	 * 
+	 * 
+	 * @param multipartFile
+	 * @param id
+	 * @return
+	 */
 	@PostMapping(value = "/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	String upload(@RequestPart("file") MultipartFile multipartFile, @PathVariable Long id) {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -58,6 +71,11 @@ public class UserController {
     	return "ok";
 	}
 	
+	/**
+	 * 
+	 * @param newUser
+	 * @return
+	 */
 	@PostMapping("/register")//value = "/user", consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 	User newUser(@RequestBody User newUser) {
 		User found = userRepository.findByEmail(newUser.getEmail());
@@ -69,16 +87,30 @@ public class UserController {
 		return userRepository.save(newUser);
 	}
 	
+	/**
+	 * 
+	 * @param email
+	 * @return
+	 */
 	@GetMapping("/fetchid/{email}")
 	String getUserId(@PathVariable String email) {
 		return userRepository.findByEmail(email).getId().toString();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	@GetMapping("/users")
 	List<User> getAllUsers() {
 		return userRepository.findAll();
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@GetMapping("/dashboard/{id}")
 	List<User> getCandidates(@PathVariable Long id) {
 		User self = userRepository.findById(id).get();
@@ -101,11 +133,22 @@ public class UserController {
 		return candidates;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@GetMapping("/user/{id}")
 	User getUserById(@PathVariable Long id) {
 		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 	}
 
+	/**
+	 * 
+	 * @param newUser
+	 * @param id
+	 * @return
+	 */
 	@PutMapping("/edituser/{id}")
 	ModelAndView updateUser(@RequestBody User newUser, @PathVariable Long id) {
 		ModelAndView mav = new ModelAndView("user");
@@ -123,6 +166,12 @@ public class UserController {
     	return mav;
     }
 
+	/**
+	 * 
+	 * 
+	 * @param user
+	 * @return
+	 */
 	@PostMapping("/login")
 	String authenticateLogin(@RequestBody User user) {
 		System.out.println("authenticating login...");
@@ -133,18 +182,22 @@ public class UserController {
 		String inputPassword = user.getPassword();
 
 		User result = userRepository.findByEmail(inputEmail);
-
+		
+		
 		if (result != null) {
 			System.out.println("User Found E-mail: " + result.getEmail() + " pass: " + result.getPassword()
 					+ " input e-mail: " + inputEmail + " input pass: " + inputPassword);
 
+			//store database email
 			String dbEmail = result.getEmail();
 			String dbPassword = result.getPassword();
 
+			//compare database email with user email
 			if (inputEmail.equals(dbEmail) && inputPassword.equals(dbPassword)) {
 				System.out.println("Account Successfully Authenticated");
 				return "{" + "\"login_error\":\"0\"," + "\"time\":\"0\"" + "}";
 			}
+
 			System.out.println("Error Logging in: Invalid Email/Pass");
 			return "{" + "\"login_error\":\"2\"," + "\"time\":\"0\"" + "}";
 		}
@@ -153,6 +206,12 @@ public class UserController {
 		return "{" + "\"login_error\":\"1\"," + "\"time\":\"0\"" + "}";
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@DeleteMapping("user/{id}")
 	String deleteUser(@PathVariable Long id) {
 		if (!userRepository.existsById(id)) {

@@ -8,5 +8,6 @@ import com.gambit.server.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
 
+	//query repository using retrieved email
 	public User findByEmail(String email);
 }

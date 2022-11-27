@@ -85,7 +85,7 @@ public class UserController {
 		int limit = 10;
 		List<User> allUsers = userRepository.findAll();
 		List<User> candidates = new ArrayList<>();
-		System.out.println("all users size: " + allUsers.size());
+
 		int j = 0;
 		for(int i = 0; i < limit; i++) {
 			if(i > limit || i >= allUsers.size() ) {

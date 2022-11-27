@@ -18,44 +18,51 @@ export default function Dashboard() {
 
     const loadData = async () => {
         const result = await axios.get("http://localhost:8080/dashboard/" + id);
-        user.push(result.data);
+        //user.push(result.data);
         setUser(result.data);
         //user.map(u => console.log("user: --", u[0]));
         console.log("data:", result.data);
 
         for(let i = 0; i < user.length; i++) {
             if(i == 0)
-                user.display = "";
+                user.display = "\"display:block;\"";
         }
-
+        onLoad();
         //console.log("display:", user.display);
     };
+
+    const onLoad = () => {
+        var card = document.getElementById("card");
+        var p = document.getElementById("id");
+        p.style = user.display;
+        p.innerHTML = id;
+
+        var firstNameHeading = document.getElementById("firstName");
+        firstNameHeading.innerHTML = user.firstName;
+        console.log(card);
+        console.log(p);
+        console.log(display);
+    }
 
     useEffect(()=>{
         loadData();
     }, []);
 
-    return(
-        <div className='contaner'>
+    return(<div className='contaner' onLoad={onLoad}>
             <div className="row">
-                <DashMenu/>
-                <div className="py-4">
-                <div className="card">
-                        <div className="card-header" >
-                            
-                            Details of user id: <p>{id}</p>
-                            
-                            
+                <DashMenu />
+
+                <div className="card" id="card">
+                        <div className="card-header">
+                            Details of user id: <p id="id"></p>
                             <ul className="list-group list-group-flush">
-
                                 <li className="list-group-item">
-                                    <b>First Name:</b>{user.firstName}
+                                    <b>First Name:</b><h3 id="firstName"></h3>
+                                    {user.firstName}
                                 </li>
-
                             </ul>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     )

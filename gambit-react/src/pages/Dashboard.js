@@ -9,11 +9,11 @@ export default function Dashboard() {
 
     const [userList, setUserList]=useState([]);
     const [user, setUser] = useState({
+        id:"",
         email:"",
         firstName:"",
         lastName:"",
         username:"",
-        display:"\"display:none;\""
     });
     //const{email, firstName, lastName, username, password, photo, display} = user;
     const {id} = useParams();
@@ -22,33 +22,41 @@ export default function Dashboard() {
     const loadData = async () => {
         const result = await axios.get("http://localhost:8080/dashboard/" + id);
         //user.push(result.data);
-       // setUser(result.data[a]);
-        setUserList([...userList, result.data[a]]);
+        //setUser(result.data[a]);
+        
         //user.map(u => console.log("user: --", u[0]));
-        console.log("list: ", userList);
-        console.log("data", result.data[a++]);
-        console.log("user:", user);
+        //console.log("list: ", userList);
+        //console.log("name", result.data[a].firstName,"data", result.data[a]);
+        //console.log("user:", user);
 
-
+       // console.log("a",a);
         if(a == 0) {
-            userList[a].display = "\"display:block;\"";
-            index++;
-            setUser(userList[a+1]);
+            setUser(result.data[a]);
         }
-            
+        userList.push(result.data[a++]);
+        //setUserList([...userList, result.data[a++]]);
         
         //console.log("display:", user.display);
     };
 
     const dislike = () => {
-        user = userList[index];
-        //var firstNameHeading = document.getElementById("firstName");
-        //firstNameHeading.innerHTML = user.firstName;
-        //console.log(card);
-        //console.log(p);
-        //console.log(display);
+        //setUser(userList[index]);
+        var card = document.getElementById("card");
+        console.log("disliked... user display =", user.display);
+        //card.style.display = "none";
+       console.log(userList);
+       setUser(userList.pop());
     }
 
+    const like = async () => {
+        //setUser(userList[index]);
+        var card = document.getElementById("card");
+        console.log("liked... ", {id:user.id});
+        //card.style.display = "none";
+        const result = await axios.post("http://localhost:8080/dashboard/" + id + "/like", JSON.stringify(user.id));
+       setUser(userList.pop());
+        
+    }
     useEffect(()=>{
         loadData();
     }, []);
@@ -66,11 +74,11 @@ export default function Dashboard() {
                                     {user.firstName}
                                 </li>
                                 <li className="list-group-item">
-                                    <b>Last Name:</b><h3 id="lastName"></h3>
+                                    <b>LOL Name:</b><h3 id="lastName"></h3>
                                     {user.lastName}
                                 </li>
                             </ul>
-                            <button type="submit" className="btn btn-outline-success">Like</button>
+                            <button type="submit" className="btn btn-outline-success" onClick={like}>Like</button>
                     <Link className="btn btn-outline-danger mx-2" onClick={dislike}>Dislike</Link>
                         </div>
                     </div>

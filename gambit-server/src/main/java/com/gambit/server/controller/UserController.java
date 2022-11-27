@@ -71,6 +71,27 @@ public class UserController {
     	return "ok";
 	}
 	
+	@PostMapping("/dashboard/{id}/like")
+	User processLike(@RequestBody String likedUserValue, @PathVariable Long id) {
+		User user = userRepository.findById(id).get();
+		System.out.println("id: " + id + " user: " + user);
+		//Long likeId = Long.parseLong(likedUser.getId());
+		likedUserValue = likedUserValue.substring(0, likedUserValue.length()-1);
+		System.out.println("likedUser = " + likedUserValue);
+		Long likedId = Long.parseLong(likedUserValue);
+		User likedUser = userRepository.findById(likedId).get();
+		
+		if(!likedUser.containsLike(id)) {
+			likedUser.addLike(id);
+			System.out.println("adding user user: " + id + " that liked user: " + likedId);
+		}
+		if(user.containsLike(likedId) && likedUser.containsLike(id)) {
+			System.out.println("Match found!");
+		}
+		
+		return userRepository.save(likedUser);
+	}
+	
 	/**
 	 * 
 	 * @param newUser

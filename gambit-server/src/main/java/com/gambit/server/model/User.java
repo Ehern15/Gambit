@@ -25,8 +25,11 @@ public class User {
 	private String biography;
 	
 	private Long[] matchList;
+	private Long[] likes;
 	private int matchPosition;
+	private int likePosition;
 	private int matchSize;
+	private int likeSize;
 	
 	/*@Lob
 	private Byte[] image;
@@ -117,9 +120,47 @@ public class User {
 	public void addMatch(Long userId) {
 		if(matchSize < (matchSize+1)) {
 			this.matchSize += 5;
-			matchList = Arrays.copyOf(matchList, matchSize);
+			matchList = matchList == null ? new Long[matchSize] : Arrays.copyOf(matchList, matchSize);
+
 		}
-		matchList[++matchPosition] = userId;
+		matchList[matchPosition++] = userId;
+	}
+	
+	public void addLike(Long userId) {
+		if(likeSize < (likeSize+1)) {
+			this.likeSize += 5;
+			likes = likes == null ? new Long[likeSize] : Arrays.copyOf(likes, likeSize);
+
+		}
+		likes[likePosition++] = userId;
+	}
+	
+	public boolean containsLike(Long userId) {
+		if(likes == null)
+			return false;
+		for(Long candidate : likes) {
+			if(candidate.equals(userId)) {
+				System.out.println("Contains Like");
+				return true;
+			}
+		}
+		return false;
+		//matchList[matchPosition++] = userId;
+	}
+	
+	public boolean hasMatch(Long userId) {
+		if(matchList == null)
+			return false;
+		for (int i = 0; i < matchList.length-1; i++) {
+			Long comparedId = matchList[i+1];
+			Long candidate = matchList[i];
+			if(candidate.equals(comparedId)) {
+				System.out.println("Found match!");
+				return true;
+			}
+		}
+		return false;
+		
 	}
 	
 	public void removeMatch(Long userId) {
@@ -134,6 +175,14 @@ public class User {
 				matchList = Arrays.copyOf(matchList, matchSize);
 			}
 		}
+	}
+
+	public Long[] getLikes() {
+		return likes;
+	}
+
+	public void setLikes(Long[] likes) {
+		this.likes = likes;
 	}
 
 }

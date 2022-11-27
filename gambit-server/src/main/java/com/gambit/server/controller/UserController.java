@@ -2,6 +2,7 @@ package com.gambit.server.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,9 +89,11 @@ public class UserController {
 		if(user.hasMatch(likedUser)) {
 			System.out.println("Match found!");
 			if(!user.containsMatch(likedUser)) {
+				System.out.println("added match: " + likedId + " to user: " + id);
 				user.addMatch(likedId);
 			}
 			if(!likedUser.containsMatch(user)) {
+				System.out.println("added match: " + id + " to user: " + likedId);
 				likedUser.addMatch(id);	
 			}
 		}
@@ -129,12 +132,20 @@ public class UserController {
 		System.out.println("matchlist method: " + id);
 		List<User> matches = new ArrayList<User>();
 		User user = userRepository.findById(id).get();
+		System.out.println("List: " + Arrays.toString(user.getMatchedList()));
 		for(Long candidateId : user.getMatchedList()) {
-			if(candidateId == null)
-				break;
+			if(candidateId == null) {
+				//System.out.println("candidate id is null skipping..");
+				continue;
+			}
 			User candidate = userRepository.findById(candidateId).get();
-			candidate.setPassword("");
-			matches.add(candidate);
+			//System.out.println("Checking if user has match...");
+			if(user.hasMatch(candidate)) {
+				candidate.setPassword("");
+				matches.add(candidate);
+				//System.out.println("has match and adding to list: " + candidate.getId());
+			}
+
 		}
 		return matches;
 	}
@@ -146,6 +157,38 @@ public class UserController {
 	@GetMapping("/users")
 	List<User> getAllUsers() {
 		return userRepository.findAll();
+	}
+	
+	@PostMapping("/unmatch/{id}")
+	String unmatchUser(@PathVariable Long id, @RequestBody String unmatchValue) {
+		System.out.println("Unmatching attempt");
+		User user = userRepository.findById(id).get();
+		unmatchValue = unmatchValue.substring(0, unmatchValue.length()-1);
+		Long unmatchId = Long.parseLong(unmatchValue);
+		User unmatch = userRepository.findById(unmatchId).get();
+		System.out.println(Arrays.toString(user.getMatchedList()) + " : size " + user.getMatchedList().length);
+		
+		for(int i = 0; i < user.getMatchedList().length; i++) {
+			Long currentId = user.getMatchedList()[i];
+			System.out.println("Current id: " + currentId + " unmatch: " + unmatchId + " user id: " + id);
+			if(currentId == null) {
+				continue;
+				//return "Could not remove match: " + unmatchId;
+			}
+				
+			if(currentId.equals(unmatchId)) {
+				user.removeMatch(unmatchId);
+				unmatch.removeMatch(id);
+				System.out.println("Removed match: " + unmatchId);
+				System.out.println(Arrays.toString(user.getMatchedList()) + " : size " + user.getMatchedList().length);
+				System.out.println(Arrays.toString(unmatch.getMatchedList()) + " : size " + unmatch.getMatchedList().length);
+				userRepository.save(user);
+				userRepository.save(unmatch);
+				return "Removed match: " + unmatchId;
+			}
+		}
+		System.out.println("Could not remove match: " + unmatchId);
+		return "Could not remove match: " + unmatchId;
 	}
 	
 	/**

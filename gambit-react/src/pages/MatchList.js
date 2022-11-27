@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import { json, Link, useParams } from "react-router-dom";
 import DashMenu from "../layout/DashMenu";
+import Dashboard from './Dashboard';
 
 export default function MatchList() {
 
@@ -21,11 +22,17 @@ export default function MatchList() {
         console.log(result.data);
     };
 
+    const unmatchUser = async (userId) => {
+        await axios.post(`http://localhost:8080/unmatch/${id}`, JSON.stringify(userId));
+        loadData();
+    };
+
     useEffect(()=>{
         loadData();
     }, []);
 
     return(        <div className="container">
+        <DashMenu/>
     <div className="py-4">
       <table className="table border shadow">
         <thead>
@@ -61,6 +68,7 @@ export default function MatchList() {
                 </Link>
                 <button
                   className="btn btn-danger mx-2"
+                  onClick={() => unmatchUser(user.id)}
                 >
                   Unmatch
                 </button>

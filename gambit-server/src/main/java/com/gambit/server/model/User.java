@@ -26,7 +26,7 @@ public class User {
 	
 	private Long[] matchList;
 	private Long[] likes;
-	private int matchPosition;
+	//private int matchPosition;
 	private int likePosition;
 	private int matchSize;
 	private int likeSize;
@@ -118,12 +118,32 @@ public class User {
 	}
 
 	public void addMatch(Long userId) {
-		if(matchSize < (matchSize+1)) {
+		if(matchList == null) {
+			matchList = new Long[5];
+		}
+		if(matchSize < (matchList.length+1)) {
 			this.matchSize += 5;
 			matchList = matchList == null ? new Long[matchSize] : Arrays.copyOf(matchList, matchSize);
 
 		}
-		matchList[matchPosition++] = userId;
+		//matchList[matchPosition++] = userId;
+		
+		int lastNullIndex = 0;
+		boolean containsMatch = false;
+		for (int i = 0; i < matchList.length; i++) {
+			if(matchList[i] == null)
+				lastNullIndex = i;
+			if(matchList[i] != null) {
+				if(matchList[i].compareTo(userId) == 0) {
+					containsMatch = true;
+					break;
+				}
+			}
+		}
+		
+		if(!containsMatch) {
+			matchList[lastNullIndex] = userId;
+		}
 	}
 	
 	public void addLike(Long userId) {
@@ -142,10 +162,10 @@ public class User {
 		
 		for(Long candidate : likes) {
 			if(candidate == null)
-				break;
-			System.out.println(candidate);
-			if(candidate.equals(userId)) {
-				System.out.println("Contains Like");
+				continue;
+			//System.out.println(candidate);
+			if(candidate.compareTo(userId) == 0) {
+				//System.out.println("Contains Like");
 				return true;
 			}
 		}
@@ -159,7 +179,7 @@ public class User {
 		
 		for(Long currentId : matchList) {
 			if(currentId == null)
-				break;
+				continue;
 			if(user.getId().equals(currentId)) {
 				return true;
 			}
@@ -173,15 +193,21 @@ public class User {
 	}
 	
 	public void removeMatch(Long userId) {
+		if(matchList == null) {
+			matchList = new Long[10];
+		}
 		for(int index = 0; index < matchList.length; index++) {
-			if(matchList[index] == matchList[matchPosition]) {
-				matchList[index] = 0L;
-				matchPosition--;
+			if(matchList[index] == null)
+				continue;
+			if(matchList[index].compareTo(userId) == 0) {
+				matchList[index] = null;
 				matchSize--;
+				//matchPosition--;
 			}
 			
-			if(matchList.length - 5 > matchSize) {
+			if(matchList.length - 5 > matchSize && matchList.length <= 0) {
 				matchList = Arrays.copyOf(matchList, matchSize);
+				matchSize = matchList.length;
 			}
 		}
 	}

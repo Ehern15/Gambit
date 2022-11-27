@@ -10,6 +10,7 @@ import ViewUser from "./users/ViewUser";
 import EditUser from "./users/EditUser";
 import Dashboard from './pages/Dashboard';
 import UploadImageUser from './users/UploadImageUser';
+import MatchList from './pages/MatchList';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route exact path="/viewuser/:id" element={<ViewUser/>}/>
           <Route exact path="/dashboard/:id" element={<Dashboard/>}/>
           <Route exact path="/upload/:id" element={<UploadImageUser/>}/>
+          <Route exact path="/matchlist/:id" element={<MatchList/>}/>
           <Route exact path="/Home" element={<Home/>}/>
         </Routes>
       </Router>

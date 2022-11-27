@@ -138,7 +138,12 @@ public class User {
 	public boolean containsLike(Long userId) {
 		if(likes == null)
 			return false;
+		
+		
 		for(Long candidate : likes) {
+			if(candidate == null)
+				break;
+			System.out.println(candidate);
 			if(candidate.equals(userId)) {
 				System.out.println("Contains Like");
 				return true;
@@ -148,19 +153,23 @@ public class User {
 		//matchList[matchPosition++] = userId;
 	}
 	
-	public boolean hasMatch(Long userId) {
+	public boolean containsMatch(User user) {
 		if(matchList == null)
 			return false;
-		for (int i = 0; i < matchList.length-1; i++) {
-			Long comparedId = matchList[i+1];
-			Long candidate = matchList[i];
-			if(candidate.equals(comparedId)) {
-				System.out.println("Found match!");
+		
+		for(Long currentId : matchList) {
+			if(currentId == null)
+				break;
+			if(user.getId().equals(currentId)) {
 				return true;
 			}
 		}
 		return false;
-		
+	}
+	
+	public boolean hasMatch(User likedUser) {
+		Long likedId = likedUser.getId();
+		return this.containsLike(likedId) && likedUser.containsLike(id);	
 	}
 	
 	public void removeMatch(Long userId) {

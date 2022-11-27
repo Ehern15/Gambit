@@ -85,10 +85,16 @@ public class UserController {
 			likedUser.addLike(id);
 			System.out.println("adding user user: " + id + " that liked user: " + likedId);
 		}
-		if(user.containsLike(likedId) && likedUser.containsLike(id)) {
+		if(user.hasMatch(likedUser)) {
 			System.out.println("Match found!");
+			if(!user.containsMatch(likedUser)) {
+				user.addMatch(likedId);
+			}
+			if(!likedUser.containsMatch(user)) {
+				likedUser.addMatch(id);	
+			}
 		}
-		
+		userRepository.save(user);
 		return userRepository.save(likedUser);
 	}
 	
@@ -116,6 +122,21 @@ public class UserController {
 	@GetMapping("/fetchid/{email}")
 	String getUserId(@PathVariable String email) {
 		return userRepository.findByEmail(email).getId().toString();
+	}
+	
+	@GetMapping("/matchlist/{id}")
+	List<User> getMatches(@PathVariable Long id) {
+		System.out.println("matchlist method: " + id);
+		List<User> matches = new ArrayList<User>();
+		User user = userRepository.findById(id).get();
+		for(Long candidateId : user.getMatchedList()) {
+			if(candidateId == null)
+				break;
+			User candidate = userRepository.findById(candidateId).get();
+			candidate.setPassword("");
+			matches.add(candidate);
+		}
+		return matches;
 	}
 
 	/**
@@ -159,10 +180,13 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@GetMapping("/user/{id}")
+	@GetMapping("/viewuser/{id}")
 	User getUserById(@PathVariable Long id) {
-		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+		user.setPassword("");//hide password
+		return user;
 	}
+	
 
 	/**
 	 * 

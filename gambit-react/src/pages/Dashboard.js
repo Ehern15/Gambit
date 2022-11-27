@@ -45,7 +45,16 @@ export default function Dashboard() {
         console.log("disliked... user display =", user.display);
         //card.style.display = "none";
        console.log(userList);
-       setUser(userList.pop());
+       var current = userList.pop();
+       if(current != undefined) {
+        setUser(current);
+       }
+       else {
+        card.style.display = "none";
+        var no_more_found_card = document.getElementById("no_more_found");
+        no_more_found_card.style.display = "block";
+       }
+       
     }
 
     const like = async () => {
@@ -54,7 +63,15 @@ export default function Dashboard() {
         console.log("liked... ", {id:user.id});
         //card.style.display = "none";
         const result = await axios.post("http://localhost:8080/dashboard/" + id + "/like", JSON.stringify(user.id));
-       setUser(userList.pop());
+       var current = userList.pop();
+       if(current != undefined) {
+        setUser(current);
+       }
+       else {
+        card.style.display = "none";
+        var no_more_found_card = document.getElementById("no_more_found");
+        no_more_found_card.style.display = "block";
+       }
         
     }
     useEffect(()=>{
@@ -65,6 +82,11 @@ export default function Dashboard() {
             <div className="row">
                 <DashMenu />
 
+                <div className="card" id="no_more_found" style={{display:"none"}}>
+                        <div className="card-header">
+                            <h3>No more users found!</h3>
+                        </div>
+                </div>
                 <div className="card" id="card">
                         <div className="card-header">
                             Details of user id: <p id="id">{user.id}</p>

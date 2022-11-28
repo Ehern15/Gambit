@@ -1,9 +1,15 @@
 package com.gambit.server.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -148,6 +154,65 @@ public class UserController {
 
 		}
 		return matches;
+	}
+	
+	@GetMapping("/from/{id}/{otherId}")
+	User getFrom(@PathVariable Long id) {
+		User from = userRepository.findById(id).get();
+		return from;
+	}
+	
+	@GetMapping("/to/{id}/{otherId}")
+	User getTo(@PathVariable Long otherId) {
+		User to = userRepository.findById(otherId).get();
+		return to;
+	}
+	
+	@GetMapping("/chat/{id}/{otherId}")
+	List<String> getMessages(@PathVariable Long id, @PathVariable Long otherId) throws FileNotFoundException {
+		File chatlogs = new File("./chatlogs/" + id + "-" + otherId +".txt");
+		List<String> chat = new ArrayList<String>();
+		
+		if(!chatlogs.isDirectory()) {
+			chatlogs.mkdirs();
+		}
+		if(!chatlogs.exists()) {
+			try {
+				chatlogs.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		Scanner reader = new Scanner(chatlogs);
+		
+		while(reader.hasNextLine()) {
+			String msg = reader.nextLine();
+			chat.add(msg);
+		}
+		reader.close();
+		return chat;
+	}
+	
+	@PostMapping("/chat/{id}/{otherId}")
+	String sendMessage(@PathVariable Long id, @PathVariable Long otherId, @RequestBody String msg) throws IOException {
+		File chatlogs = new File("./chatlogs/" + id + "-" + otherId + ".txt");
+		User from = userRepository.findById(id).get();
+		msg = from.getFirstName() + ": " + msg.substring(0, msg.length()-1);
+		System.out.println("Sending chat: " + msg);
+		if(!chatlogs.exists()) {
+			try {
+				chatlogs.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(chatlogs, true)));
+		
+		writer.println(msg);
+		writer.close();
+		return "success";
 	}
 
 	/**

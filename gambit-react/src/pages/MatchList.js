@@ -60,10 +60,7 @@ export default function MatchList() {
                 >
                   View
                 </Link>
-                <Link
-                  className="btn btn-primary mx-2"
-                  
-                >
+                <Link className="btn btn-primary mx-2" to={`/chat/${id}/${user.id}`}>
                   Chat
                 </Link>
                 <button

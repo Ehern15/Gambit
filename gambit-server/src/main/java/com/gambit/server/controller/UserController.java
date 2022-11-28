@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,7 +71,7 @@ public class UserController {
     		
     		userRepository.save(user);
 			FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-	} catch (IOException e) {
+    	} catch (IOException e) {
 			e.printStackTrace();
 		}
     	return "ok";
@@ -171,20 +170,31 @@ public class UserController {
 	@GetMapping("/chat/{id}/{otherId}")
 	List<String> getMessages(@PathVariable Long id, @PathVariable Long otherId) throws FileNotFoundException {
 		File chatlogs = new File("./chatlogs/" + id + "-" + otherId +".txt");
+		File complementFile = new File("./chatlogs/" + otherId + "-" + id +".txt");
+		
 		List<String> chat = new ArrayList<String>();
 		
-		if(!chatlogs.isDirectory()) {
-			chatlogs.mkdirs();
+		File chatlogUsed = null;
+		
+		if(chatlogs.exists()) {
+			chatlogUsed = chatlogs;
+			//System.out.println("set chatlogs");
 		}
-		if(!chatlogs.exists()) {
+		else if(!chatlogs.exists() && complementFile.exists()) {
+			chatlogUsed = complementFile;
+			//System.out.println("set complement file");
+		}
+		
+		if(!chatlogs.exists() && !complementFile.exists()) {
 			try {
 				chatlogs.createNewFile();
+				chatlogUsed = chatlogs;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		Scanner reader = new Scanner(chatlogs);
+		Scanner reader = new Scanner(chatlogUsed);
 		
 		while(reader.hasNextLine()) {
 			String msg = reader.nextLine();
@@ -195,24 +205,48 @@ public class UserController {
 	}
 	
 	@PostMapping("/chat/{id}/{otherId}")
-	String sendMessage(@PathVariable Long id, @PathVariable Long otherId, @RequestBody String msg) throws IOException {
+	List<String> sendMessage(@PathVariable Long id, @PathVariable Long otherId, @RequestBody String msg) throws IOException {
+		System.out.println("From: " + id + " To: " + otherId);
 		File chatlogs = new File("./chatlogs/" + id + "-" + otherId + ".txt");
+		File complementFile = new File("./chatlogs/" + otherId + "-" + id +".txt");
+		List<String> chat = new ArrayList<String>();
 		User from = userRepository.findById(id).get();
+		msg = msg.replace("+", " ");
 		msg = from.getFirstName() + ": " + msg.substring(0, msg.length()-1);
 		System.out.println("Sending chat: " + msg);
-		if(!chatlogs.exists()) {
+		File chatlogUsed = null;
+		
+		if(chatlogs.exists()) {
+			chatlogUsed = chatlogs;
+			System.out.println("set chatlogs");
+		}
+		else if(!chatlogs.exists() && complementFile.exists()) {
+			chatlogUsed = complementFile;
+			System.out.println("set complement file");
+		}
+		
+		if(!chatlogs.exists() && !complementFile.exists()) {
 			try {
 				chatlogs.createNewFile();
+				chatlogUsed = chatlogs;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(chatlogs, true)));
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(chatlogUsed, true)));
 		
 		writer.println(msg);
 		writer.close();
-		return "success";
+		
+		Scanner reader = new Scanner(chatlogUsed);
+		
+		while(reader.hasNextLine()) {
+			String message = reader.nextLine();
+			chat.add(message);
+		}
+		reader.close();
+		return chat;
 	}
 
 	/**
@@ -302,7 +336,7 @@ public class UserController {
 	 * @param id
 	 * @return
 	 */
-	@PutMapping("/edituser/{id}")
+	@PostMapping("/edituser/{id}")
 	ModelAndView updateUser(@RequestBody User newUser, @PathVariable Long id) {
 		ModelAndView mav = new ModelAndView("user");
     	User selectedUser = userRepository.findById(id)
@@ -359,6 +393,11 @@ public class UserController {
 		return "{" + "\"login_error\":\"1\"," + "\"time\":\"0\"" + "}";
 	}
 
+	@GetMapping("user/{id}")
+	User getUser(@PathVariable Long id) {
+		User user = userRepository.findById(id).get();
+		return user;
+	}
 	/**
 	 * 
 	 * 

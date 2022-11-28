@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams  } from "react-router-dom";
+import { Link, UNSAFE_enhanceManualRouteObjects, useNavigate, useParams  } from "react-router-dom";
 import './../chat.css';
 
 export default function Chat() {
@@ -30,8 +30,7 @@ export default function Chat() {
       setTo(fromResult.data);
       console.log("To:", toResult.data);
       const result = await axios.get(`http://localhost:8080/chat/${id}/${otherId}`);
-      var firstName = result.data + '';
-      firstName = firstName.split(":")[0];
+
       setMessages(result.data);
       console.log("result: ", result.data);
 
@@ -46,7 +45,7 @@ export default function Chat() {
         console.log("sending msg: ", msg);
         const result = await axios.post(`http://localhost:8080/chat/${id}/${otherId}`, msg);
         setMessages(result.data);
-        console.log(result.data);
+        //console.log(result.data);
     };
 
     return(
@@ -64,7 +63,7 @@ export default function Chat() {
                                     {messages.firstName}
                                 </li>
                                 
-                                {messages.map((message, index) => (
+                                {Array.from(messages).map((message, index) => (
                                     <div className="chat-card" key={index}>
                                         <p>{message}</p>
                                     </div>

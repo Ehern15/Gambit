@@ -26,8 +26,7 @@ public class User {
 	
 	private Long[] matchList;
 	private Long[] likes;
-	//private int matchPosition;
-	private int likePosition;
+
 	private int matchSize;
 	private int likeSize;
 	
@@ -147,12 +146,30 @@ public class User {
 	}
 	
 	public void addLike(Long userId) {
+		if(likes == null) {
+			likes = new Long[5];
+		}
 		if(likeSize < (likeSize+1)) {
 			this.likeSize += 5;
 			likes = likes == null ? new Long[likeSize] : Arrays.copyOf(likes, likeSize);
 
 		}
-		likes[likePosition++] = userId;
+		int lastNullIndex = 0;
+		boolean containsLike = false;
+		for (int i = 0; i < likes.length; i++) {
+			if(likes[i] == null)
+				lastNullIndex = i;
+			if(likes[i] != null) {
+				if(likes[i].compareTo(userId) == 0) {
+					containsLike = true;
+					break;
+				}
+			}
+		}
+		
+		if(!containsLike) {
+			likes[lastNullIndex] = userId;
+		}
 	}
 	
 	public boolean containsLike(Long userId) {

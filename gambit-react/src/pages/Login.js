@@ -4,7 +4,6 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 
 export default function Login() {
     //Comment
-    document.body.style.backgroundImage = "url(/gambit-react/src/Images/wallpaper.png)";
     let navigate = useNavigate();
 
     const [user, setUser]=useState({

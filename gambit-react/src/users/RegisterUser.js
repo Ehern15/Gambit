@@ -11,12 +11,10 @@ export default function RegisterUser() {
         firstName:"",
         lastName:"",
         username:"",
-        password:"",
-        photos:"",
-
+        password:""
     })
 
-    const{email, firstName, lastName, username, password, photos}=user;
+    const{email, firstName, lastName, username, password}=user;
 
     const onInputChange= (e) => {
         setUser({...user,[e.target.name]:e.target.value})
@@ -24,7 +22,7 @@ export default function RegisterUser() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/user", user);
+        await axios.post("http://localhost:8080/register", user);
         navigate("/");
     };
 
@@ -94,14 +92,8 @@ export default function RegisterUser() {
                             value={password}
                             onChange={(e) => onInputChange(e)}/>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="Password" className="form-label">
-                            Photos:
-                        </label>
-
-                    </div>
                     <button type="submit" className="btn btn-outline-success">Submit</button>
-                    <Link className="btn btn-outline-danger mx-2" to="/login">Cancel</Link>
+                    <Link className="btn btn-outline-danger mx-2" to="/">Cancel</Link>
                 </form>
             </div>
         </div>

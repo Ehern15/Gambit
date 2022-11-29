@@ -19,8 +19,9 @@ export default function ViewUser() {
     }, []);
   
     const loadUser = async () => {
-      const result = await axios.get(`http://localhost:8080/user/${id}`);
+      const result = await axios.get(`http://localhost:8080/viewuser/${id}`);
       setUser(result.data);
+      console.log(result.data);
     };
 
     return(
@@ -52,7 +53,7 @@ export default function ViewUser() {
                             </ul>
                         </div>
                     </div>
-                    <Link className="btn btn-primary my-2" to={"/"}>Back To Home</Link>
+                    <Link className="btn btn-primary my-2" to={`/matchlist/` + id}>Back</Link>
                 </div>
             </div>
         </div>

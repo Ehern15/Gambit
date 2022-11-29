@@ -26,7 +26,7 @@ export default function EditUser() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.put(`http://localhost:8080/edituser/${id}`, user);
+        await axios.post(`http://localhost:8080/edituser/${id}`, user);
         navigate("/dashboard/" + id);
     };
 
@@ -48,9 +48,10 @@ export default function EditUser() {
         const result = await axios.get(`http://localhost:8080/user/${id}`);
         console.log("result data: ", result.data);
         setUser(result.data);
-        user.image = result.data.image;
-        console.log("img path:", user.image);
-        loadImage();
+        console.log(result.data);
+        //user.image = result.data.image;
+        //console.log("img path:", user.image);
+        //loadImage();
     }
 
     return <div className="container" onLoad={loadUser}>

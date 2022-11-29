@@ -25,10 +25,12 @@ public class User {
 	private String biography;
 	
 	private Long[] matchList;
-	private int matchPosition;
+	private Long[] likes;
+
 	private int matchSize;
+	private int likeSize;
 	
-	@Lob
+	/*@Lob
 	private Byte[] image;
 
 	public Byte[] getImage() {
@@ -37,8 +39,8 @@ public class User {
 
 	public void setImage(Byte[] image) {
 		this.image = image;
-	}
-
+	}*/
+	
 	public Long getId() {
 		return id;
 	}
@@ -115,25 +117,124 @@ public class User {
 	}
 
 	public void addMatch(Long userId) {
-		if(matchSize < (matchSize+1)) {
-			this.matchSize += 5;
-			matchList = Arrays.copyOf(matchList, matchSize);
+		if(matchList == null) {
+			matchList = new Long[5];
 		}
-		matchList[++matchPosition] = userId;
+		if(matchSize < (matchList.length+1)) {
+			this.matchSize += 5;
+			matchList = matchList == null ? new Long[matchSize] : Arrays.copyOf(matchList, matchSize);
+
+		}
+		//matchList[matchPosition++] = userId;
+		
+		int lastNullIndex = 0;
+		boolean containsMatch = false;
+		for (int i = 0; i < matchList.length; i++) {
+			if(matchList[i] == null)
+				lastNullIndex = i;
+			if(matchList[i] != null) {
+				if(matchList[i].compareTo(userId) == 0) {
+					containsMatch = true;
+					break;
+				}
+			}
+		}
+		
+		if(!containsMatch) {
+			matchList[lastNullIndex] = userId;
+		}
+	}
+	
+	public void addLike(Long userId) {
+		if(likes == null) {
+			likes = new Long[5];
+		}
+		if(likeSize < (likeSize+1)) {
+			this.likeSize += 5;
+			likes = likes == null ? new Long[likeSize] : Arrays.copyOf(likes, likeSize);
+
+		}
+		int lastNullIndex = 0;
+		boolean containsLike = false;
+		for (int i = 0; i < likes.length; i++) {
+			if(likes[i] == null)
+				lastNullIndex = i;
+			if(likes[i] != null) {
+				if(likes[i].compareTo(userId) == 0) {
+					containsLike = true;
+					break;
+				}
+			}
+		}
+		
+		if(!containsLike) {
+			likes[lastNullIndex] = userId;
+		}
+	}
+	
+	public boolean containsLike(Long userId) {
+		if(likes == null)
+			return false;
+		
+		
+		for(Long candidate : likes) {
+			if(candidate == null)
+				continue;
+			//System.out.println(candidate);
+			if(candidate.compareTo(userId) == 0) {
+				//System.out.println("Contains Like");
+				return true;
+			}
+		}
+		return false;
+		//matchList[matchPosition++] = userId;
+	}
+	
+	public boolean containsMatch(User user) {
+		if(matchList == null)
+			return false;
+		
+		for(Long currentId : matchList) {
+			if(currentId == null)
+				continue;
+			if(user.getId().equals(currentId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasMatch(User likedUser) {
+		Long likedId = likedUser.getId();
+		return this.containsLike(likedId) && likedUser.containsLike(id);	
 	}
 	
 	public void removeMatch(Long userId) {
+		if(matchList == null) {
+			matchList = new Long[10];
+		}
 		for(int index = 0; index < matchList.length; index++) {
-			if(matchList[index] == matchList[matchPosition]) {
-				matchList[index] = 0L;
-				matchPosition--;
+			if(matchList[index] == null)
+				continue;
+			if(matchList[index].compareTo(userId) == 0) {
+				matchList[index] = null;
 				matchSize--;
+				//matchPosition--;
 			}
 			
-			if(matchList.length - 5 > matchSize) {
+			if(matchList.length - 5 > matchSize && matchList.length <= 0) {
 				matchList = Arrays.copyOf(matchList, matchSize);
+				matchSize = matchList.length;
 			}
 		}
+	}
+
+	public Long[] getLikes() {
+		return likes;
+	}
+
+	public void setLikes(Long[] likes) {
+		this.likes = likes;
 	}
 
 }

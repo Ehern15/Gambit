@@ -6,47 +6,104 @@ import DashMenu from "../layout/DashMenu";
 export default function Dashboard() {
 
     var index = 0;
-    const [user, setUser]=useState([]);
-    const{email, firstName, lastName, username, password, photo} = user;
+
+    const [userList, setUserList]=useState([]);
+    const [user, setUser] = useState({
+        id:"",
+        email:"",
+        firstName:"",
+        lastName:"",
+        username:"",
+    });
+    //const{email, firstName, lastName, username, password, photo, display} = user;
     const {id} = useParams();
 
+    var a = 0;
+    const loadData = async () => {
+        const result = await axios.get("http://localhost:8080/dashboard/" + id);
+        //user.push(result.data);
+        //setUser(result.data[a]);
+        
+        //user.map(u => console.log("user: --", u[0]));
+        //console.log("list: ", userList);
+        //console.log("name", result.data[a].firstName,"data", result.data[a]);
+        //console.log("user:", user);
+
+       // console.log("a",a);
+        if(a == 0) {
+            setUser(result.data[a]);
+        }
+        userList.push(result.data[a++]);
+        //setUserList([...userList, result.data[a++]]);
+        
+        //console.log("display:", user.display);
+    };
+
+    const dislike = () => {
+        //setUser(userList[index]);
+        var card = document.getElementById("card");
+        console.log("disliked... user display =", user.display);
+        //card.style.display = "none";
+       console.log(userList);
+       var current = userList.pop();
+       if(current != undefined) {
+        setUser(current);
+       }
+       else {
+        card.style.display = "none";
+        var no_more_found_card = document.getElementById("no_more_found");
+        no_more_found_card.style.display = "block";
+       }
+       
+    }
+
+    const like = async () => {
+        //setUser(userList[index]);
+        var card = document.getElementById("card");
+        console.log("liked... ", {id:user.id});
+        //card.style.display = "none";
+        const result = await axios.post("http://localhost:8080/dashboard/" + id + "/like", JSON.stringify(user.id));
+       var current = userList.pop();
+       if(current != undefined) {
+        setUser(current);
+       }
+       else {
+        card.style.display = "none";
+        var no_more_found_card = document.getElementById("no_more_found");
+        no_more_found_card.style.display = "block";
+       }
+        
+    }
     useEffect(()=>{
         loadData();
     }, []);
 
-    const loadData = async () => {
-        const result = await axios.get("http://localhost:8080/candidates/" + id);
-        //setUser({user, [1]:result.data})
-        //setUser(result.data);
-        user.push(result.data);
-        //user.map(u => console.log("user: --", u[0]));
-        console.log("data:", result.data);
-    };
-
-
-
-    return(
-        <div className='contaner'>
+    return(<div className='contaner'>
             <div className="row">
-                <DashMenu/>
-                <div className="py-4">
-                <div className="card">
-                        <div className="card-header" >
-                            Details of user id: {user.map((i, candidate) => {
-                               
-                                    return <p key={i}>{candidate.email}</p>;
-                            
-                            })}
+                <DashMenu />
+
+                <div className="card" id="no_more_found" style={{display:"none"}}>
+                        <div className="card-header">
+                            <h3>No more users found!</h3>
+                        </div>
+                </div>
+                <div className="card" id="card">
+                        <div className="card-header">
+                            Details of user id: <p id="id">{user.id}</p>
                             <ul className="list-group list-group-flush">
-
                                 <li className="list-group-item">
-                                    <b>First Name:</b>
+                                    <b>First Name:</b><h3 id="firstName"></h3>
+                                    {user.firstName}
                                 </li>
-
+                                <li className="list-group-item">
+                                    <b>LOL Name:</b><h3 id="lastName"></h3>
+                                    {user.lastName}
+                                </li>
                             </ul>
+                            <button type="submit" className="btn btn-outline-success" onClick={like}>Like</button>
+                    <Link className="btn btn-outline-danger mx-2" onClick={dislike}>Dislike</Link>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     )

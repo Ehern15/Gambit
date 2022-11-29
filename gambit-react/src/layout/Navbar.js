@@ -19,6 +19,9 @@ export default function Navbar() {
                 <Link className="btn btn-outline-light" to="/register">
                     Sign Up
                 </Link>
+                <Link className="btn btn-outline-light" to="/report-issue">
+                    Report Issue
+                </Link>
                 </ul>
             </div>
             </nav>

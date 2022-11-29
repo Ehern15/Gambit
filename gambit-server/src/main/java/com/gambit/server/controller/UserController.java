@@ -353,14 +353,21 @@ public class UserController {
     	return mav;
     }
 
+	
+	//Store login attempts
+	private int login_attempts = 0;
+	private long start_time = 0;
 	/**
-	 * 
+	 * This method helps login the by finding their email and matching the password to their account. 
+	 * If after 4 login attempts, lock the account with a timer.
 	 * 
 	 * @param user
 	 * @return
 	 */
 	@PostMapping("/login")
 	String authenticateLogin(@RequestBody User user) {
+		
+		
 		System.out.println("authenticating login...");
 
 		System.out.println("user email: " + user.getEmail());
@@ -378,11 +385,37 @@ public class UserController {
 			//store database email
 			String dbEmail = result.getEmail();
 			String dbPassword = result.getPassword();
-
+			
+			System.out.println("Time Passed in Minutes: " + (System.currentTimeMillis() - start_time) / 1000 / 60);
+			//check if timer is greater than 15 reset loginAttempts
+			if(((System.currentTimeMillis() - start_time) / 1000 / 60) >  14 && login_attempts >= 4 && start_time != 0) {
+				System.out.println("Account Unlocked!");
+				login_attempts = 0;
+				start_time = 0;
+			}
+			
 			//compare database email with user email
-			if (inputEmail.equals(dbEmail) && inputPassword.equals(dbPassword)) {
+			if (inputEmail.equals(dbEmail) && inputPassword.equals(dbPassword) && login_attempts < 4) {
 				System.out.println("Account Successfully Authenticated");
+				
+				//reset login attempts and start_time
+				start_time = 0;
+				login_attempts = 0;
+				//Print out amount of attempts
+				System.out.println("Amount of Attempts: " + login_attempts);
+				
 				return "{" + "\"login_error\":\"0\"," + "\"time\":\"0\"" + "}";
+				
+			} else if(inputEmail.equals(dbEmail) && !inputPassword.equals(dbPassword)) {
+				if(login_attempts < 4){	
+					++login_attempts;
+					System.out.println("Amount of Attempts: " + login_attempts);
+				} else if (start_time == 0){
+					//after fifth attempt, reset start time to compare to
+					System.out.println("Account Locked: Attempts : " + login_attempts);
+					
+					start_time = System.currentTimeMillis();
+				}
 			}
 
 			System.out.println("Error Logging in: Invalid Email/Pass");

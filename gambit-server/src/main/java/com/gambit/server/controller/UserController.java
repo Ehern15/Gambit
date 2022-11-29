@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.gambit.server.exception.UserNotFoundException;
+import com.gambit.server.model.ReportMessage;
 import com.gambit.server.model.User;
+import com.gambit.server.repository.ReportRepository;
 import com.gambit.server.repository.UserRepository;
 import com.gambit.server.util.FileUploadUtil;
 
@@ -39,6 +41,9 @@ public class UserController {
 	 */
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private ReportRepository reportRepository;
 	
 	/**
 	 * This gets an uploaded image.
@@ -430,6 +435,12 @@ public class UserController {
 	User getUser(@PathVariable Long id) {
 		User user = userRepository.findById(id).get();
 		return user;
+	}
+	
+	@PostMapping("/help_table")
+	ReportMessage processReport(@RequestBody ReportMessage report) {
+		System.out.println("Report: " + report.getEmail() + " " + report.getDescription());
+		return reportRepository.save(report);
 	}
 	/**
 	 * 

@@ -6,21 +6,20 @@ export default function ReportIssue() {
 
     let navigate = useNavigate();
 
-    const [newhelp, setUser]=useState({
+    const [newhelp, setReport]=useState({
         email:"",
         description:"",
-
     })
 
     const{email, description}=newhelp;
 
     const onInputChange= (e) => {
-        setUser({...newhelp,[e.target.name]:e.target.value})
+        setReport({...newhelp,[e.target.name]:e.target.value})
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:3306/help_table", newhelp);
+        await axios.post("http://localhost:8080/help_table", newhelp);
         navigate("/");
     };
 
@@ -39,7 +38,6 @@ export default function ReportIssue() {
                             className="form-control"
                             placeholder="Enter your email"
                             name="email"
-                            value={email}
                             onChange={(e) => onInputChange(e)}/>
                     </div>
                     <div className="mb-3">
@@ -51,7 +49,6 @@ export default function ReportIssue() {
                             className="form-control"
                             placeholder="Enter a description of your issue"
                             name="description"
-                            value={description}
                             onChange={(e) => onInputChange(e)}/>
                     </div>
                     

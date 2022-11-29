@@ -1,0 +1,7 @@
+@media (min-width: 768px) {
+    .navbar-center {
+      position: relative;
+      left: 50% !important;
+      transform: translatex(-50%) !important;
+    }
+  }

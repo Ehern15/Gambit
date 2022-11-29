@@ -96,7 +96,7 @@ export default function Dashboard() {
                                     {user.firstName}
                                 </li>
                                 <li className="list-group-item">
-                                    <b>LOL Name:</b><h3 id="lastName"></h3>
+                                    <b>Last Name:</b><h3 id="lastName"></h3>
                                     {user.lastName}
                                 </li>
                             </ul>

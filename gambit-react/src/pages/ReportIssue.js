@@ -6,25 +6,21 @@ export default function ReportIssue() {
 
     let navigate = useNavigate();
 
-    const [user, setUser]=useState({
+    const [newhelp, setUser]=useState({
         email:"",
-        firstName:"",
-        lastName:"",
-        username:"",
-        password:"",
-        photos:"",
+        description:"",
 
     })
 
-    const{email, firstName, lastName, username, password, photos}=user;
+    const{email, description}=newhelp;
 
     const onInputChange= (e) => {
-        setUser({...user,[e.target.name]:e.target.value})
+        setUser({...newhelp,[e.target.name]:e.target.value})
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/user", user);
+        await axios.post("http://localhost:3306/help_table", newhelp);
         navigate("/");
     };
 
@@ -48,60 +44,19 @@ export default function ReportIssue() {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="FirstName" className="form-label">
-                            First Name
+                            Description of Issue
                         </label>
                         <input
                             type={"text"}
                             className="form-control"
-                            placeholder="Enter your first name"
-                            name="firstName"
-                            value={firstName}
+                            placeholder="Enter a description of your issue"
+                            name="description"
+                            value={description}
                             onChange={(e) => onInputChange(e)}/>
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="LastName" className="form-label">
-                            Last Name
-                        </label>
-                        <input
-                            type={"text"}
-                            className="form-control"
-                            placeholder="Enter your last name"
-                            name="lastName"
-                            value={lastName}
-                            onChange={(e) => onInputChange(e)}/>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="Username" className="form-label">
-                            Username
-                        </label>
-                        <input
-                            type={"text"}
-                            className="form-control"
-                            placeholder="Enter your username"
-                            name="username"
-                            value={username}
-                            onChange={(e) => onInputChange(e)}/>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="Password" className="form-label">
-                            Password
-                        </label>
-                        <input
-                            type={"password"}
-                            className="form-control"
-                            placeholder="Enter your password"
-                            name="password"
-                            value={password}
-                            onChange={(e) => onInputChange(e)}/>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="Password" className="form-label">
-                            Photos:
-                        </label>
-
-                    </div>
+                    
                     <button type="submit" className="btn btn-outline-success">Submit</button>
-                    <Link className="btn btn-outline-danger mx-2" to="/login">Cancel</Link>
+                    <Link className="btn btn-outline-danger mx-2" to="/">Cancel</Link>
                 </form>
             </div>
         </div>

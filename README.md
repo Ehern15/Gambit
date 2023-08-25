@@ -1,6 +1,25 @@
 # Gambit
 Looking for group (LFG) platform, gambit is a place for gamers to find other gamers with games they share in common to pair up and queue into competitive matches!
 
+It supports user registration
+
+![User Registration](https://github.com/TonyEra/Gambit/blob/main/register.png?raw=true)
+
+User Editing
+
+![User Editing](https://github.com/TonyEra/Gambit/blob/main/edit_user.png?raw=true)
+
+Matching system where users can be paired with others that share common interest in the same game
+
+![User Pairing](https://github.com/TonyEra/Gambit/blob/main/swiping.png?raw=true)
+
+Match view
+
+![User Registration](https://github.com/TonyEra/Gambit/blob/main/matches.png?raw=true)
+
+Profile Picture Upload
+
+![User Image Upload](https://github.com/TonyEra/Gambit/blob/main/img_upload.png?raw=true)
 
 ## Running React (the front end)
 From the terminal you will want to navigate to this path once cloned:
